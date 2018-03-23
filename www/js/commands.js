@@ -3,16 +3,7 @@ var CustomCommand_history_index = -1;
 var Monitor_output = []; 
 
 function init_command_panel(){
-     var value = get_localdata('monitor_autoscroll');
-    if (value == 'true'){
-        document.getElementById('monitor_enable_autoscroll').checked =true;
-        Monitor_check_autoscroll();
-    }
-    value = get_localdata('monitor_filter_temperatures');
-    if (value == 'true'){
-        document.getElementById('monitor_enable_filter_temperatures').checked =true;
-        Monitor_check_filter_temperatures();
-    }
+   
 }
 
 function Monitor_output_autoscrollcmd(){
@@ -21,12 +12,10 @@ function Monitor_output_autoscrollcmd(){
 
 function Monitor_check_autoscroll(){
      if (document.getElementById('monitor_enable_autoscroll').checked == true) Monitor_output_autoscrollcmd();
-      store_localdata('monitor_autoscroll', document.getElementById('monitor_enable_autoscroll').checked);
 }
 
 function Monitor_check_filter_temperatures(){
      Monitor_output_Update();
-     store_localdata('monitor_filter_temperatures', document.getElementById('monitor_enable_filter_temperatures').checked);
 }
     
 function Monitor_output_Clear(){
@@ -62,7 +51,12 @@ function Monitor_output_Update(message){
     for (var i = 0; i < Monitor_outputLength; i++) {
         if (istempfilter && Monitor_output[i].match(regex)) continue;
         if ((Monitor_output[i].trim()==="\n") || (Monitor_output[i].trim()==="\r") || (Monitor_output[i].trim()==="\r\n") || (Monitor_output[i].trim()==="") )continue;
-        else output += Monitor_output[i];
+        else {
+            m = Monitor_output[i].replace("&", "&amp;");
+            m = m.replace("<", "&lt;");
+            m = m.replace(">", "&gt;");
+            output += m  ;
+        }
     }
     document.getElementById("cmd_content").innerHTML = output;
     Monitor_check_autoscroll();
@@ -107,6 +101,6 @@ function SendCustomCommandSuccess(response){
 }
 
 function SendCustomCommandFailed(error_code,response){
-     Monitor_output_Update("Error " + error_code + " :" + response+ "\n");
-     console.log("Error " + error_code + " :" + response);
+     Monitor_output_Update("Error " + error_code + " :" + decode_entitie(response)+ "\n");
+     console.log("Error " + error_code + " :" + decode_entitie(response));
 }

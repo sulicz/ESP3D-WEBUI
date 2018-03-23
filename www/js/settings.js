@@ -46,43 +46,24 @@ function getFWshortnamefromid(value) {
     else if (  value == 2 ) response = "marlin";
     else if (  value == 3 ) response = "marlinkimbra";
     else if ( value == 4 ) response = "smoothieware";
+     else if ( value == 6 ) response = "grbl";
     else response = "???";
     return response;
 }
 function update_UI_setting(){
     for (var i = 0; i < setting_configList.length ; i++){ 
         switch (setting_configList[i].pos) {
-        //EP_E_FEEDRATE		    172
-        case "172":
-            document.getElementById("extruder_velocity").value = setting_configList[i].defaultvalue;
-            break;
-        //EP_REFRESH_PAGE_TIME			129
-         case "129":
-            document.getElementById("tempInterval_check").value = setting_configList[i].defaultvalue;
-            break;
-        //EP_REFRESH_PAGE_TIME2		460 
-        case "460":
-            document.getElementById("posInterval_check").value = setting_configList[i].defaultvalue;
-            break;
-        //EP_XY_FEEDRATE		    164
-        case "164":
-            document.getElementById("control_xy_velocity").value = parseInt(setting_configList[i].defaultvalue);
-            break;
-        //EP_Z_FEEDRATE		    168
-         case "168":
-            document.getElementById("control_z_velocity").value = setting_configList[i].defaultvalue;
-            break;
         //EP_TARGET_FW		461 
          case "461":
             target_firmware = getFWshortnamefromid(setting_configList[i].defaultvalue);
             update_UI_firmware_target() ;
-            init_files_panel();
+            init_files_panel(false);
             break;        
         // EP_IS_DIRECT_SD   850
         case "850":
             direct_sd = (setting_configList[i].defaultvalue == 1)? true: false;
             update_UI_firmware_target() ;
-            init_files_panel();
+            init_files_panel(false);
             break;
         }
     }
@@ -92,35 +73,37 @@ function build_control_from_index (index, extra_set_function) {
     var i = index;
     var content = "";
      if (i < setting_configList.length) {
+         content+="<div id='status_setting_"+ i + "' class='form-group has-feedback' >";
         content+="<div class='input-group'>";
-        content+="<span class='input-group-btn'>";
+        content+="<div class='input-group-btn'>";
         content+="<button class='btn btn-default' onclick='setting_revert_to_default("+i+")' >";
         content+=get_icon_svg("repeat");
         content+="</button>";
-        content+="</span>";
-        content+="<div id='status_setting_"+ i + "' class='form-group has-feedback' >";
+        content+="</div>";
+         content+="<div class='input-group'>";
         if (setting_configList[i].Options.length > 0){
             content+=build_select_for_setting_list(i);
-            content+="<span id='icon_setting_"+ i + "'class='form-control-feedback'  style='right: 1em'></span>";
+            content+="<span id='icon_setting_"+ i + "'class='form-control-feedback'  style='right: 1em; top:3px'></span>";
             }
         else {
-            content+="<input id='setting_" + i + "' type='text' class='form-control' style='width:auto'  value='" + setting_configList[i].defaultvalue + "' onkeyup='setting_checkchange(" + i +")' >";
-            content+="<span id='icon_setting_"+ i + "'class='form-control-feedback' ></span>";
+            content+="<input id='setting_" + i + "' type='text' class='form-control'  value='" + setting_configList[i].defaultvalue + "' onkeyup='setting_checkchange(" + i +")' >";
+            content+="<span id='icon_setting_"+ i + "'class='form-control-feedback' style='top:3px' ></span>";
             }
         
-        content+="</div>";
-        content+="<span class='input-group-btn'>";
+        content+="<div class='input-group-btn'>";
         content+="<button  id='btn_setting_"+ i + "' class='btn btn-default' onclick='settingsetvalue("+ i +");";
         if (typeof extra_set_function != 'undefined') {
              content+= extra_set_function + "(" + i + ");"
             }
-        content+="' translate english_content='Set' >" + translate_text_item("Set") + "</button>&nbsp;";
+        content+="' translate english_content='Set' >" + translate_text_item("Set") + "</button>";
          if (setting_configList[i].pos == "1") {
             content+="<button class='btn btn-default' onclick='scanwifidlg(\"" + i +"\")'>";
             content+=get_icon_svg("search");
             content+="</button>";
         }
-        content+="</span>";
+        content+="</div>";
+        content+="</div>";
+        content+="</div>";
         content+="</div>";
         }
     return content;
@@ -147,7 +130,7 @@ function build_HTML_setting_list(filter){
             content+= translate_text_item( setting_configList[i].label);
             content+="</td>";
             content+="<td style='vertical-align:middle'>";
-            content+= build_control_from_index(i);
+            content+= "<table><tr><td>" + build_control_from_index(i) + "</td></tr></table>";
             content+="</td>";
            content+="</tr>\n";
         }

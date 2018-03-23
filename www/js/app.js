@@ -11,21 +11,6 @@ window.addEventListener("resize", OnresizeWindow);
 function OnresizeWindow(){
 }
 
-function build_language_menu(){
-var content ="";
-for (var lang_i =0 ; lang_i < language_list.length; lang_i++){
-    content+="<a href='#' onclick=\"translate_text('";
-    content+= language_list[lang_i][0];
-    content+= "'); update_ui_text();\"><span >";
-    content+= language_list[lang_i][1];
-    content+= "</span><span class=\"clearfix\"></span></a>";
-    if ( language_list[lang_i][0] == language){
-        document.getElementById("translate_menu").innerHTML=language_list[lang_i][1];
-        }
-}
-document.getElementById("lang_menu").innerHTML=content;
-}
-
 function update_ui_text(){   
     build_HTML_setting_list(current_setting_filter);
 }
@@ -52,6 +37,10 @@ function update_UI_firmware_target() {
         fwName = "Marlin Kimbra";
         document.getElementById('configtablink').style.display = 'none';
         }
+    else if (target_firmware == "grbl" ) {
+        fwName = "Grbl";
+        document.getElementById('configtablink').style.display = 'block';
+        }
     else {
             fwName = "Unknown";
             document.getElementById('configtablink').style.display = 'none';
@@ -75,8 +64,6 @@ function initUI() {
     if (typeof document.getElementById('FW_VERSION') != "undefined")document.getElementById('FW_VERSION').innerHTML=fw_version;
     // Get the element with id="defaultOpen" and click on it
     document.getElementById("maintablink").click();
-    //var value = get_localdata('language');
-    //translate_text(value);
     //removeIf(production)
     console.log(JSON.stringify(translated_list));
     //endRemoveIf(production)
@@ -87,7 +74,7 @@ function initUI() {
     init_extruder_panel();
     init_command_panel();
     init_controls_panel();
-    init_files_panel();
+    init_files_panel(false);
     //check if we need setup
     if ( target_firmware == "???"){
         setupdlg();
@@ -124,4 +111,12 @@ function HTMLEncode(str){
     }
    }
   return aRet.join('');    
+}
+
+function decode_entitie(str_text) {
+var tmpelement = document.createElement('div');
+tmpelement.innerHTML = str_text;
+str_text = tmpelement.textContent;
+tmpelement.textContent = '';
+return str_text;
 }

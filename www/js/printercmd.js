@@ -44,6 +44,6 @@ function SendPrinterCommandSuccess(response){
 }
 
 function SendPrinterCommandFailed(error_code,response){
-     Monitor_output_Update("Error " + error_code + " :" + response+ "\n");
-     console.log("Error " + error_code + " :" + response);
+     Monitor_output_Update("Error " + error_code + " :" + decode_entitie(response)+ "\n");
+     console.log("Error " + error_code + " :" + decode_entitie(response));
 }
