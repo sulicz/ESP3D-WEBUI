@@ -562,8 +562,9 @@ function files_select_upload(){
 }
 
 function files_check_if_upload(){
-    var canupload = true;
-    var files = document.getElementById("files_input_file").files;
+      var files = document.getElementById("files_input_file").files;
+   /* --- Forced file name 8+3
+    * var canupload = true;
      if ( target_firmware == "marlin" ) {
         for (var i = 0; i < files.length; i++) {
              var filename = files[i].name;
@@ -581,7 +582,7 @@ function files_check_if_upload(){
                 alertdlg (translate_text_item("Error"), translate_text_item("Please use 8.3 filename only.")); 
                 return;
             }  
-        }
+        } */ 
     if (direct_sd && !( target_firmware == "smoothieware"  && files_currentPath.startsWith(secondary_sd))){
         SendPrinterCommand("[ESP200]", false, process_check_sd_presence );
     } else {
@@ -650,7 +651,16 @@ function files_start_upload(){
     formData.append('path', path);
      for (var i = 0; i < files.length; i++) {
          var file = files[i];
-         formData.append('myfile[]', file, path + file.name);
+        
+         if ( target_firmware == "marlin" ) {
+           // force 8+3 filename
+           var fname = file.name.substring(0,file.name.indexOf(".")).replace(" ","_");
+           var fend = file.name.substring(file.name.indexOf(".")+1,file.name.length).replace(" ","_");
+           var f83 = fname.substring(0,8) +"."+ fend.substring(0,3);
+           formData.append('myfile[]', file, path + f83 );
+         } else {
+           formData.append('myfile[]', file, path + file.name );
+         }
          //console.log( path +file.name);
          }
      files_error_status = "Upload " +file.name;
